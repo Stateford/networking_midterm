@@ -14,6 +14,7 @@ namespace Network {
         Protocol _protocol;
         std::string _hostname;
         std::string _path;
+        std::string _port;
 
         void _parseUrl();
     public:
@@ -25,6 +26,7 @@ namespace Network {
         std::string getUrl();
         std::string getHostname();
         std::string getPath();
+        std::string getPort();
         Protocol getProtocol();
     };
 }

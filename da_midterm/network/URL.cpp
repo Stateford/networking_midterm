@@ -29,16 +29,41 @@ namespace Network
         {
             _protocol = HTTP;
             buffer.replace(buffer.find("http://"), strlen("http://"), "");
+            if (buffer.find(":") >= 0)
+            {
+                auto size = buffer.find_first_of("/") - buffer.find(':');
+                _port = buffer.substr(buffer.find(":") + 1, size - 1);
+                buffer.replace(buffer.find(":"), size, "");
+            }
+            else
+                _port = "80";
         }
         else if (buffer.find("https://") != std::string::npos)
         {
             _protocol = HTTPS;
             buffer.replace(buffer.find("https://"), strlen("https://"), "");
+            if (buffer.find(":") >= 0)
+            {
+                auto size = buffer.size() - buffer.find(':');
+                _port = buffer.substr(buffer.find(":") + 1, buffer.size() - buffer.find(":"));
+                buffer.replace(buffer.find(":"), size, "");
+            }
+            else
+                _port = "443";
         }
         else
         {
             _protocol = HTTP;
+            if (buffer.find(":") >= 0)
+            {
+                auto size = buffer.size() - buffer.find(':');
+                _port = buffer.substr(buffer.find(":") + 1, buffer.size() - buffer.find(":"));
+                buffer.replace(buffer.find(":"), size, "");
+            }
+            else
+                _port = "80";
         }
+        
 
         if (buffer.find("/") == std::string::npos)
         {
@@ -77,5 +102,10 @@ namespace Network
     std::string URL::getUrl()
     {
         return _url;
+    }
+
+    std::string URL::getPort()
+    {
+        return _port;
     }
 }

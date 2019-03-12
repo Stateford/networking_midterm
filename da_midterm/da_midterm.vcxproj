@@ -125,12 +125,20 @@
   <ItemGroup>
     <ClCompile Include="config\config.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="network\network.cpp" />
+    <ClCompile Include="network\body.cpp" />
+    <ClCompile Include="network\headers.cpp" />
+    <ClCompile Include="network\request.cpp" />
+    <ClCompile Include="network\response.cpp" />
+    <ClCompile Include="network\socket.cpp" />
     <ClCompile Include="network\URL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config\config.h" />
-    <ClInclude Include="network\network.h" />
+    <ClInclude Include="network\body.h" />
+    <ClInclude Include="network\headers.h" />
+    <ClInclude Include="network\request.h" />
+    <ClInclude Include="network\response.h" />
+    <ClInclude Include="network\socket.h" />
     <ClInclude Include="network\URL.h" />
   </ItemGroup>
   <ItemGroup>
