@@ -131,6 +131,8 @@
     <ClCompile Include="network\response.cpp" />
     <ClCompile Include="network\socket.cpp" />
     <ClCompile Include="network\URL.cpp" />
+    <ClCompile Include="pubs\models\author.cpp" />
+    <ClCompile Include="pubs\pubs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config\config.h" />
@@ -140,11 +142,23 @@
     <ClInclude Include="network\response.h" />
     <ClInclude Include="network\socket.h" />
     <ClInclude Include="network\URL.h" />
+    <ClInclude Include="pubs\models\author.h" />
+    <ClInclude Include="pubs\pubs.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\nlohmann.json.3.5.0\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.5.0\build\native\nlohmann.json.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\nlohmann.json.3.5.0\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.5.0\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

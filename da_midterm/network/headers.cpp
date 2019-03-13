@@ -12,7 +12,7 @@ namespace Network
         return _headers[key];
     }
 
-    std::string Headers::get_headers()
+    std::string Headers::getHeaders()
     {
         std::string buffer;
         for (auto &p : _headers)
@@ -23,4 +23,8 @@ namespace Network
         return buffer;
     }
 
+    void Headers::addHeader(std::string key, std::string value)
+    {
+        _headers[key] = value;
+    }
 }

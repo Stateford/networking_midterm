@@ -65,7 +65,7 @@ namespace Network
                 + "HTTP/1.1\r\nHost: " 
                 + _url.getHostname() 
                 + "\r\n" 
-                + _headers.get_headers() 
+                + _headers.getHeaders() 
                 + "\r\n";
     }
 
@@ -81,6 +81,49 @@ namespace Network
         _headers["Content-Type"] = "application/json";
         _headers["Content-Length"] = std::to_string(_body.length());
         return this;
+    }
+
+    Response Request::getResponse()
+    {
+        return _response;
+    }
+
+    Response Request::request()
+    {
+        std::string response;
+        int recvbuflen = DEFAULT_BUFLEN;
+
+        _getaddrinfo();
+
+        std::string get_http;
+        _socket.connect_socket(_ptr, _result);
+        _buildHeader(GET, &get_http);
+
+        // Send an initial buffer
+        int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
+        if (iResult == SOCKET_ERROR)
+            throw TEXT("send failed with error: ") + WSAGetLastError() + TEXT('\n');
+
+        // Receive until the peer closes the connection
+        do
+        {
+            std::vector<char> buffer(recvbuflen);
+            //iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+            iResult = recv(_socket.get_socket(), &buffer[0], recvbuflen, 0);
+            if (iResult > 0)
+            {
+                if (iResult != 0 && buffer[iResult - 1] == '\0')
+                    std::cout << "got zero" << std::endl;
+                response += std::string(buffer.begin(), buffer.begin() + iResult);
+            }
+            else if (iResult == 0)
+                (void(0));
+            else
+                throw TEXT("recv failed with error: ") + WSAGetLastError() + TEXT('\n');
+
+        } while (iResult > 0);
+        _response.parseResponse(response);
+        return _response;
     }
 
     void Request::request(std::string *response)
@@ -101,18 +144,21 @@ namespace Network
         // Receive until the peer closes the connection
         do
         {
-            std::vector<char> buffer(recvbuflen+20);
+            std::vector<char> buffer(recvbuflen);
             //iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
             iResult = recv(_socket.get_socket(), &buffer[0], recvbuflen, 0);
-            if (iResult >= 0)
+            if (iResult > 0)
             {
-                *response += std::string(buffer.cbegin(), buffer.cend());
+                if (iResult != 0 && buffer[iResult - 1] == '\0')
+                    std::cout << "got zero" << std::endl;
+                *response += std::string(buffer.begin(), buffer.begin() + iResult);
             }
+            else if (iResult == 0)
+                break;
             else
                 throw TEXT("recv failed with error: ") + WSAGetLastError() + TEXT('\n');
 
         } while (iResult > 0);
-        *response += "\0";
     }
 
     void Request::request(nlohmann::json *response)
@@ -136,10 +182,12 @@ namespace Network
             std::vector<char> buffer(recvbuflen + 20);
             //iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
             iResult = recv(_socket.get_socket(), &buffer[0], recvbuflen, 0);
-            if (iResult >= 0)
+            if (iResult > 0)
             {
-                buffer_response += std::string(buffer.cbegin(), buffer.cend());
+                buffer_response += std::string(buffer.begin(), buffer.begin() + iResult);
             }
+            else if (iResult == 0)
+                break;
             else
                 throw TEXT("recv failed with error: ") + WSAGetLastError() + TEXT('\n');
 

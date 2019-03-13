@@ -31,7 +31,7 @@ namespace Network
         Method _method;
         Headers _headers;
         Body _body;
-        //Response _response;
+        Response _response;
         WSAData _wsaData;
         URL _url;
         void _getaddrinfo();
@@ -41,8 +41,11 @@ namespace Network
         Request(URL);
         ~Request();
 
+        Response getResponse();
+
         Request* method(Method);
         Request* json(nlohmann::json);
+        Response request();
         void request(std::string*);
         void request(nlohmann::json*);
     };

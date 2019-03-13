@@ -16,6 +16,9 @@ namespace Network
         Response() {};
 
         void parseResponse(std::string);
+
+        Body getBody();
+        Headers getHeaders();
     };
 
 

@@ -1,1 +1,1 @@
-HOSTNAME=google.com
+HOSTNAME=http://clayserver.myddns.me:8090

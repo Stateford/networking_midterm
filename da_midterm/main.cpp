@@ -1,14 +1,19 @@
 #include <iostream>
+#include <nlohmann\json.hpp>
 #include "config\config.h"
 #include "network\URL.h"
 #include "network\request.h"
 #include "network\headers.h"
-#include <nlohmann\json.hpp>
+#include "network\response.h"
 
 int main()
 {
-    Network::Request req(std::string("http://clayserver.myddns.me:8090/authors"));
+    Config::Config config;
+    
+
+    Network::Request req(config.HOSTNAME + std::string("/authors"));
     std::string response;
+    response.reserve(10000);
     req.method(Network::GET)->request(&response);
 
     /*
@@ -18,8 +23,23 @@ int main()
     Date: Tue, 12 Mar 2019 20:44:20 GMT
     Connection: keep-alive
     */
+    
+    Network::Response res;
+    res.parseResponse(response);
+    
+    try {
+        auto j = nlohmann::json::parse(res.getBody().getBody());
 
+        for (auto &p : j)
+            std::cout << p << std::endl;
+    }
+    catch (nlohmann::json::exception e)
+    {
+        std::cout << res.getBody().getBody() << std::endl;
+        std::cout << e.what() << std::endl;
+        std::cout << e.id << std::endl;
+    }
 
-    std::cout << headers[1] << std::endl;
+    
     return 0;
 }

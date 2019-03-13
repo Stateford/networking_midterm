@@ -13,7 +13,8 @@ namespace Network
     public:
         Headers();
 
+        void addHeader(std::string, std::string);
         std::string& operator[](std::string);
-        std::string get_headers();
+        std::string getHeaders();
     };
 }

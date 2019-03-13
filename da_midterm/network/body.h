@@ -13,6 +13,7 @@ namespace Network
         Body(std::string body);
 
         void setBody(std::string);
+        std::string getBody();
         int length();
     };
 }

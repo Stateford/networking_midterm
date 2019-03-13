@@ -16,4 +16,9 @@ namespace Network
     {
         _body = body;
     }
+
+    std::string Body::getBody()
+    {
+        return _body;
+    }
 }
