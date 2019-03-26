@@ -71,6 +71,9 @@ namespace Network
         case PUT:
             method = "PUT";
             break;
+        case DEL:
+            method = "DELETE";
+            break;
         default:
             break;
         }

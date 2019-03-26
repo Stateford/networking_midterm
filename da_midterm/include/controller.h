@@ -4,8 +4,8 @@
 #include <string>
 
 
-#include "models/author.h"
-#include "models/book.h"
+#include "author.h"
+#include "book.h"
 
 namespace Pubs
 {
@@ -15,7 +15,11 @@ namespace Pubs
     class Controller
     {
     public:
+        static void checkError(json);
+
         static void createAuthor(Author);
+        static void deleteAuthor(string);
+        static void deleteAuthor(Author);
         static void editAuthor(Author);
         static Author getAuthor(string);
         static void addBookToAuthor(Author, Book);

@@ -14,12 +14,12 @@ namespace Pubs
         state = JSON_STRING(j["state"]);
         city = JSON_STRING(j["city"]);
         zip = JSON_STRING(j["zip"]);
-        contract = j["contract"].get<bool>();
+        contract = j["contract"].get<int>();
     }
 
     json Author::to_json()
     {
-        json temp = {
+        json author = {
             {"au_id", au_id},
             {"au_fname", au_fname},
             {"au_lname", au_lname},
@@ -31,6 +31,6 @@ namespace Pubs
             {"contract", contract}
         };
 
-        return temp;
+        return author;
     }
 }
