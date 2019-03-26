@@ -6,6 +6,20 @@
 
 namespace Network
 {
+    // STATIC METHODS
+    Response Request::get(std::string url)
+    {
+        Request req(url);
+        return req.method(Network::GET)->request();
+    }
+
+    Response Request::get(URL url)
+    {
+        Request req(url);
+        return req.method(Network::GET)->request();
+    }
+
+    // BUILDER METHODS
     Request::Request(std::string url)
     {
         int result = WSAStartup(MAKEWORD(2, 2), &_wsaData);
@@ -42,23 +56,23 @@ namespace Network
             throw "getaddrinfo failed with error: " + iResult + '\n';
     }
 
-    void Request::_buildHeader(Method method, std::string *header)
+    void Request::_buildHeader(std::string *header)
     {
-        std::string _method;
+        std::string method;
 
-        switch (method)
+        switch (_method)
         {
         case GET:
-            _method = "GET";
+            method = "GET";
             break;
         case POST:
-            _method = "POST";
+            method = "POST";
             break;
         default:
             break;
         }
 
-        *header = _method;
+        *header = method;
         *header += " " 
                 + _url.getPath() 
                 + " " 
@@ -67,6 +81,9 @@ namespace Network
                 + "\r\n" 
                 + _headers.getHeaders() 
                 + "\r\n";
+        
+        if (_method == POST)
+            *header += _body.getBody() + "\r\n";
     }
 
     Request* Request::method(Method method)
@@ -97,7 +114,7 @@ namespace Network
 
         std::string get_http;
         _socket.connect_socket(_ptr, _result);
-        _buildHeader(GET, &get_http);
+        _buildHeader(&get_http);
 
         // Send an initial buffer
         int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
@@ -134,7 +151,7 @@ namespace Network
 
         std::string get_http;
         _socket.connect_socket(_ptr, _result);
-        _buildHeader(GET, &get_http);
+        _buildHeader(&get_http);
 
         // Send an initial buffer
         int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
@@ -169,7 +186,7 @@ namespace Network
 
         std::string get_http;
         _socket.connect_socket(_ptr, _result);
-        _buildHeader(GET, &get_http);
+        _buildHeader(&get_http);
 
         // Send an initial buffer
         int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);

@@ -35,11 +35,14 @@ namespace Network
         WSAData _wsaData;
         URL _url;
         void _getaddrinfo();
-        void _buildHeader(Method, std::string*);
+        void _buildHeader(std::string*);
     public:
         Request(std::string);
         Request(URL);
         ~Request();
+
+        static Response get(std::string);
+        static Response get(URL);
 
         Response getResponse();
 

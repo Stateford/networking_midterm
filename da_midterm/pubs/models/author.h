@@ -17,7 +17,7 @@ namespace Pubs
         std::string _state;
         std::string _city;
         std::string _zip;
-        bool contract;
+        bool _contract;
     public:
         Author(json);
     };

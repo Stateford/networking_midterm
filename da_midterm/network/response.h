@@ -19,6 +19,7 @@ namespace Network
 
         Body getBody();
         Headers getHeaders();
+        std::string content();
     };
 
 
