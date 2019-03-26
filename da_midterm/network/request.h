@@ -15,6 +15,7 @@ constexpr int DEFAULT_BUFLEN = 4095;
 
 namespace Network
 {
+    typedef int RESULT;
     enum Method {
         GET,
         POST,

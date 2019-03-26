@@ -132,7 +132,8 @@
     <ClCompile Include="network\socket.cpp" />
     <ClCompile Include="network\URL.cpp" />
     <ClCompile Include="pubs\models\author.cpp" />
-    <ClCompile Include="pubs\pubs.cpp" />
+    <ClCompile Include="pubs\controller.cpp" />
+    <ClCompile Include="pubs\models\book.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config\config.h" />
@@ -143,7 +144,8 @@
     <ClInclude Include="network\socket.h" />
     <ClInclude Include="network\URL.h" />
     <ClInclude Include="pubs\models\author.h" />
-    <ClInclude Include="pubs\pubs.h" />
+    <ClInclude Include="pubs\controller.h" />
+    <ClInclude Include="pubs\models\book.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />

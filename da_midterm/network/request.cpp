@@ -51,7 +51,7 @@ namespace Network
         _hints.ai_protocol = IPPROTO_TCP;
 
         // Resolve the server address and port
-        int iResult = GetAddrInfoA(_url.getHostname().c_str(), _url.getPort().c_str(), &_hints, &_result);
+        RESULT iResult = GetAddrInfoA(_url.getHostname().c_str(), _url.getPort().c_str(), &_hints, &_result);
         if (iResult != 0)
             throw "getaddrinfo failed with error: " + iResult + '\n';
     }
@@ -67,6 +67,9 @@ namespace Network
             break;
         case POST:
             method = "POST";
+            break;
+        case PUT:
+            method = "PUT";
             break;
         default:
             break;
@@ -117,7 +120,7 @@ namespace Network
         _buildHeader(&get_http);
 
         // Send an initial buffer
-        int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
+        RESULT iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
         if (iResult == SOCKET_ERROR)
             throw TEXT("send failed with error: ") + WSAGetLastError() + TEXT('\n');
 
@@ -154,7 +157,7 @@ namespace Network
         _buildHeader(&get_http);
 
         // Send an initial buffer
-        int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
+        RESULT iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
         if (iResult == SOCKET_ERROR)
             throw TEXT("send failed with error: ") + WSAGetLastError() + TEXT('\n');
 
@@ -189,7 +192,7 @@ namespace Network
         _buildHeader(&get_http);
 
         // Send an initial buffer
-        int iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
+        RESULT iResult = send(_socket.get_socket(), get_http.c_str(), (int)strlen(get_http.c_str()), 0);
         if (iResult == SOCKET_ERROR)
             throw TEXT("send failed with error: ") + WSAGetLastError() + TEXT('\n');
 

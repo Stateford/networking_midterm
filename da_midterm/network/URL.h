@@ -11,7 +11,7 @@ namespace Network {
     class URL {
     private:
         std::string _url;
-        Protocol _protocol;
+        Protocol _protocol = HTTP;
         std::string _hostname;
         std::string _path;
         std::string _port;

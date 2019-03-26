@@ -6,19 +6,23 @@
 namespace Pubs
 {
     using namespace nlohmann;
+    using std::string;
+
     class Author
     {
-    private:
-        std::string _au_id;
-        std::string _au_lname;
-        std::string _au_fname;
-        std::string _phone;
-        std::string _address;
-        std::string _state;
-        std::string _city;
-        std::string _zip;
-        bool _contract;
     public:
+        string au_id;
+        string au_lname;
+        string au_fname;
+        string phone;
+        string address;
+        string state;
+        string city;
+        string zip;
+        bool contract;
+
         Author(json);
+
+        json to_json();
     };
 }

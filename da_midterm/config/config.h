@@ -4,11 +4,13 @@
 
 namespace Config 
 {
+    using std::string;
+
     class Config {
     private:
-        const std::string CONFIG_PATH = "config.txt";
+        const string CONFIG_PATH = "config.txt";
     public:
-        static std::string HOSTNAME;
+        static string HOSTNAME;
         Config();
         ~Config();
 

@@ -5,13 +5,12 @@
 
 namespace Network
 {
-
     class Response
     {
     private:
         Headers _headers;
         Body _body;
-        unsigned int _statusCode;
+        unsigned int _statusCode = 0;
     public:
         Response() {};
 
@@ -21,6 +20,4 @@ namespace Network
         Headers getHeaders();
         std::string content();
     };
-
-
 }
