@@ -1,5 +1,6 @@
 .vs/
 debug/
 release/
+packages/
 
 *.vcxproj.*
