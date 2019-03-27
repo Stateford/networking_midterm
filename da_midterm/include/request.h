@@ -47,8 +47,8 @@ namespace Network
 
         Response getResponse();
 
-        Request* method(Method);
-        Request* json(nlohmann::json);
+        Request& method(Method);
+        Request& json(nlohmann::json);
         Response request();
         void request(std::string*);
         void request(nlohmann::json*);

@@ -10,13 +10,13 @@ namespace Network
     Response Request::get(std::string url)
     {
         Request req(url);
-        return req.method(Network::GET)->request();
+        return req.method(Network::GET).request();
     }
 
     Response Request::get(URL url)
     {
         Request req(url);
-        return req.method(Network::GET)->request();
+        return req.method(Network::GET).request();
     }
 
     // BUILDER METHODS
@@ -92,18 +92,18 @@ namespace Network
             *header += _body.getBody() + "\r\n";
     }
 
-    Request* Request::method(Method method)
+    Request& Request::method(Method method)
     {
         _method = method;
-        return this;
+        return *this;
     }
 
-    Request* Request::json(nlohmann::json json_obj)
+    Request& Request::json(nlohmann::json json_obj)
     {
         _body.setBody(json_obj.dump());
         _headers["Content-Type"] = "application/json";
         _headers["Content-Length"] = std::to_string(_body.length());
-        return this;
+        return *this;
     }
 
     Response Request::getResponse()

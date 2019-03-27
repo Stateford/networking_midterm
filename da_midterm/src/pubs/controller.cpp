@@ -19,7 +19,7 @@ namespace Pubs
         vector<Author> authors;
         Request request(Config::Config::HOSTNAME + "/authors");
 
-        Response response = request.method(GET)->request();
+        Response response = request.method(GET).request();
 
         auto JSON = json::parse(response.content());
 
@@ -33,7 +33,7 @@ namespace Pubs
     {
         Request request(Config::Config::HOSTNAME + "/authors/" + au_id);
 
-        Response response = request.method(GET)->request();
+        Response response = request.method(GET).request();
 
         auto JSON = json::parse(response.content());
         
@@ -45,7 +45,7 @@ namespace Pubs
     {
         Request request(Config::Config::HOSTNAME + "/authors/" + au_id);
 
-        Response response = request.method(DEL)->request();
+        Response response = request.method(DEL).request();
 
         auto JSON = json::parse(response.content());
 
@@ -61,7 +61,7 @@ namespace Pubs
     {
         Request request(Config::Config::HOSTNAME + "/authors/" + author.au_id);
 
-        Response response = request.method(PUT)->json(author.to_json())->request();
+        Response response = request.method(PUT).json(author.to_json()).request();
         auto JSON = json::parse(response.content());
 
         checkError(JSON);
@@ -72,7 +72,7 @@ namespace Pubs
         vector<Book> books;
         Request request(Config::Config::HOSTNAME + "/books");
 
-        Response response = request.method(GET)->request();
+        Response response = request.method(GET).request();
 
         auto JSON = json::parse(response.content());
 
@@ -85,7 +85,7 @@ namespace Pubs
     void Controller::createAuthor(Author author)
     {
         Request request(Config::Config::HOSTNAME + "/authors");
-        Response response = request.method(POST)->json(author.to_json())->request();
+        Response response = request.method(POST).json(author.to_json()).request();
 
         auto JSON = json::parse(response.content());
 
@@ -96,7 +96,7 @@ namespace Pubs
     {
         vector<Book> books;
         Request request(Config::Config::HOSTNAME + "/authors/books/" + author.au_id);
-        Response response = request.method(GET)->request();
+        Response response = request.method(GET).request();
 
         auto JSON = json::parse(response.content());
 
@@ -114,7 +114,7 @@ namespace Pubs
             {"au_id", author.au_id},
             {"title_id", book.title_id}
         };
-        Response response = request.method(PUT)->json(body)->request();
+        Response response = request.method(PUT).json(body).request();
 
         auto JSON = json::parse(response.content());
 
@@ -133,7 +133,7 @@ namespace Pubs
         body["au_id"] = author.au_id;
         body["title_id"] = bookIds;
  
-        Response response = request.method(PUT)->json(body)->request();
+        Response response = request.method(PUT).json(body).request();
 
         auto JSON = json::parse(response.content());
     }
@@ -147,7 +147,7 @@ namespace Pubs
             {"title_id", book.title_id}
         };
 
-        Response response = request.method(PUT)->json(body)->request();
+        Response response = request.method(PUT).json(body).request();
 
         auto JSON = json::parse(response.content());
 
