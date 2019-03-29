@@ -1,8 +1,27 @@
 #include "../stdafx.h"
 #include "control.h"
 
+#include <locale>
+#include <codecvt>
+
 namespace Controls
 {
+    std::vector<Control*> *Control::controls = new std::vector<Control*>();
+
+    std::string utf16_to_utf8(std::wstring utf16)
+    {
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::string temp = converter.to_bytes(utf16);
+        return temp;
+    }
+
+    std::wstring utf8_to_utf16(std::string utf8)
+    {
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring temp = converter.from_bytes(utf8);
+        return temp;
+    }
+
     unsigned int Control::lastMessageId = 2000;
 
     Control::Control(int x, int y, int width, int height)
@@ -83,6 +102,17 @@ namespace Controls
             ListView_SetItemText(_handle, count, i, &row[i][0]);
 
         return *this;
+    }
+
+    ListView& ListView::addRow(std::vector<std::string> row)
+    {
+        std::vector<std::wstring> utf18Vector;
+        for (auto &p : row)
+        {
+            std::wstring convertedStr = utf8_to_utf16(p);
+            utf18Vector.push_back(convertedStr);
+        }
+        return addRow(utf18Vector);
     }
 
     void Button::create()

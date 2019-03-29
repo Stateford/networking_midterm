@@ -5,16 +5,20 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <memory>
 
 
 namespace Controls
 {
+    std::string utf16_to_utf8(std::wstring);
+    std::wstring utf8_to_utf16(std::string);
+
     class Control
     {
     protected:
         HWND _handle;
         HWND _hwnd;
-
+        bool _hasCallBack = false;
         int _x;
         int _y;
         int _width;
@@ -23,14 +27,22 @@ namespace Controls
         std::wstring _text;
         static unsigned int lastMessageId;
     public:
-        unsigned int messageId;
+        static std::vector<Control*> *controls;
 
+        unsigned int messageId;
         std::function<void()> callback;
-        Control(HWND hwnd) { _hwnd = hwnd; }
+
+        Control(HWND hwnd) { _hwnd = hwnd; Control::controls->push_back(this); }
         Control(int, int, int, int);
+
         HWND getHandle() { return _handle; }
         virtual Control& setParentWindow(HWND hwnd) { _hwnd = hwnd; return *this; }
         virtual Control& setStyleMask(long mask) { _styleMask = mask; return *this; }
+        virtual Control& setExStyleMask(long mask) {
+            SendMessage(_handle, LVM_SETEXTENDEDLISTVIEWSTYLE,
+                mask, mask);
+            return *this;
+        }
         long getStyleMask() { return _styleMask; }
         virtual Control& setText(const wchar_t* text) { _text = text; return *this; };
         virtual Control& setX(int x) { _x = x; return *this; }
@@ -49,7 +61,8 @@ namespace Controls
             _height = height;
             return *this;
         }
-        void registerCallback(const std::function<void()> &lambda) { this->callback = lambda; };
+        bool hasCallback() { return _hasCallBack; }
+        void registerCallback(const std::function<void()> &lambda) { this->callback = lambda; _hasCallBack = true; };
         virtual void create() = 0;
     };
 
@@ -64,6 +77,7 @@ namespace Controls
         ListView(int x, int y, int width, int height) : Control(x, y, width, height) {};
         ListView& setHeaders(std::vector<std::wstring>);
         ListView& addRow(std::vector<std::wstring>);
+        ListView& addRow(std::vector<std::string>);
         ListView& clear();
 
         unsigned int columnSize();
