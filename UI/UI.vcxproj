@@ -159,7 +159,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="controls\button.h" />
     <ClInclude Include="controls\control.h" />
+    <ClInclude Include="controls\listView.h" />
+    <ClInclude Include="controls\popupMenu.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -167,7 +170,10 @@
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="controls\button.cpp" />
     <ClCompile Include="controls\control.cpp" />
+    <ClCompile Include="controls\listView.cpp" />
+    <ClCompile Include="controls\popupMenu.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

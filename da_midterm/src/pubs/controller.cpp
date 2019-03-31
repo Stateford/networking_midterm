@@ -148,7 +148,6 @@ namespace Pubs
         };
 
         Response response = request.method(PUT).json(body).request();
-
         auto JSON = json::parse(response.content());
 
         checkError(JSON);

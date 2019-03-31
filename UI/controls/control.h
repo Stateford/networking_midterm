@@ -24,13 +24,17 @@ namespace Controls
         int _width;
         int _height;
         long _styleMask;
-        std::wstring _text;
+        std::wstring _text = L"";
         static unsigned int lastMessageId;
+        unsigned int _parentMessage = 0;
+        std::function<void()> _callback;
+        
     public:
         static std::vector<Control*> *controls;
-
+        unsigned int index = 0;
         unsigned int messageId;
-        std::function<void()> callback;
+        
+        virtual void callback();
 
         Control(HWND hwnd) { _hwnd = hwnd; Control::controls->push_back(this); }
         Control(int, int, int, int);
@@ -53,6 +57,8 @@ namespace Controls
             _y = y;
             return *this;
         }
+        virtual Control& setParentMessage(unsigned int message) { _parentMessage = message; return *this; }
+        virtual unsigned int getParentMessage() { return _parentMessage; }
         virtual Control& setWidth(int width) { _width = width; return *this; }
         virtual Control& setHeight(int height) { _height = height; return *this; }
         virtual Control& setSize(int height, int width)
@@ -62,39 +68,7 @@ namespace Controls
             return *this;
         }
         bool hasCallback() { return _hasCallBack; }
-        void registerCallback(const std::function<void()> &lambda) { this->callback = lambda; _hasCallBack = true; };
+        void registerCallback(const std::function<void()> &lambda) { this->_callback = lambda; _hasCallBack = true; };
         virtual void create() = 0;
-    };
-
-    // LISTVIEW
-    class ListView : public Control
-    {
-    private:
-        const wchar_t* _type = WC_LISTVIEW;
-        std::vector<std::wstring> _headers;
-    public:
-        ListView(HWND hwnd) : Control(hwnd) {};
-        ListView(int x, int y, int width, int height) : Control(x, y, width, height) {};
-        ListView& setHeaders(std::vector<std::wstring>);
-        ListView& addRow(std::vector<std::wstring>);
-        ListView& addRow(std::vector<std::string>);
-        ListView& clear();
-
-        unsigned int columnSize();
-        unsigned int count();
-
-        void create() override;
-    };
-
-    // BUTTON CLASS
-    class Button : public Control
-    {
-    private:
-        const wchar_t* _type = WC_BUTTON;
-    public:
-        Button(HWND hwnd) : Control(hwnd) {};
-        Button(int x, int y, int width, int height) : Control(x, y, width, height) {};
-
-        void create() override;
     };
 }

@@ -88,7 +88,7 @@ namespace Network
                 + _headers.getHeaders() 
                 + "\r\n";
         
-        if (_method == POST)
+        if (_method == POST || _method == PUT)
             *header += _body.getBody() + "\r\n";
     }
 

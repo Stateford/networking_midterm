@@ -8,8 +8,12 @@ namespace Pubs
     using namespace nlohmann;
     using std::string;
 
+    const unsigned char randomChar();
+
     class Author
     {
+    private:
+        void _generateId();
     public:
         string au_id;
         string au_lname;
@@ -21,6 +25,7 @@ namespace Pubs
         string zip;
         bool contract;
 
+        Author();
         Author(json);
 
         json to_json();
