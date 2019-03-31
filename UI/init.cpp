@@ -43,7 +43,7 @@ namespace UI
         auto bookMenu = new Controls::PopupMenu(hWnd);
 
         authorView->setPosition(10, 20)
-            .setSize(300, 810)
+            .setSize(500, 820)
             .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT)
             .create();
 
@@ -57,7 +57,7 @@ namespace UI
             .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT)
             .create();
 
-        refreshButton->setPosition(200, 300)
+        refreshButton->setPosition(200, 650)
             .setSize(40, 100)
             .setStyleMask(WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON)
             .setText(L"Refresh")
@@ -85,6 +85,8 @@ namespace UI
             if (authors->size() == 0)
                 return;
             const unsigned int index = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
+            if (index > authors->size())
+                return;
             auto auths = *authors;
             Pubs::Author author = auths[index];
             *authorBooks = Pubs::Controller::getAuthorBooks(author);
@@ -191,7 +193,6 @@ namespace UI
             }
         });
 
-
         // add books to view
         std::thread([=]() {
             *books = Pubs::Controller::getAllBooks();
@@ -205,26 +206,25 @@ namespace UI
                 bookView->addRow({ p.title.c_str(), p.type.c_str(), p.pub_name.c_str(), price.c_str(), p.notes.c_str() });
             }
         }).detach();
-
     }
 
     void getAuthorData(AuthorControls controls, Pubs::Author* author)
     {
-        char au_fname[50];
-        char au_lname[50];
-        char au_phone[50];
-        char au_addr[50];
-        char au_state[50];
-        char au_city[50];
-        char au_zip[50];
+        std::string au_fname(50, '\0');
+        std::string au_lname(50, '\0');
+        std::string au_phone(50, '\0');
+        std::string au_addr(50, '\0');
+        std::string au_state(50, '\0');
+        std::string au_city(50, '\0');
+        std::string au_zip(50, '\0');
 
-        GetWindowTextA(controls.edit_auth_fname, au_fname, 50);
-        GetWindowTextA(controls.edit_auth_lname, au_lname, 50);
-        GetWindowTextA(controls.edit_auth_phone, au_phone, 50);
-        GetWindowTextA(controls.edit_auth_addr, au_addr, 50);
-        GetWindowTextA(controls.edit_auth_state, au_state, 50);
-        GetWindowTextA(controls.edit_auth_city, au_city, 50);
-        GetWindowTextA(controls.edit_auth_zip, au_zip, 50);
+        GetWindowTextA(controls.edit_auth_fname, &au_fname[0], 50);
+        GetWindowTextA(controls.edit_auth_lname, &au_lname[0], 50);
+        GetWindowTextA(controls.edit_auth_phone, &au_phone[0], 50);
+        GetWindowTextA(controls.edit_auth_addr, &au_addr[0], 50);
+        GetWindowTextA(controls.edit_auth_state, &au_state[0], 50);
+        GetWindowTextA(controls.edit_auth_city, &au_city[0], 50);
+        GetWindowTextA(controls.edit_auth_zip, &au_zip[0], 50);
 
         const unsigned int contract = ComboBox_GetCurSel(controls.edit_auth_contract);
 
@@ -296,8 +296,7 @@ namespace UI
             else
             {
                 edit = false;
-                auto auth = Pubs::Author();
-                author = &auth;
+                author = new Pubs::Author();
 
                 auto au_id = Utils::utf8_to_utf16(author->au_id);
                 Edit_SetText(AuthorCtrl.edit_auth_id, au_id.c_str());
@@ -314,12 +313,31 @@ namespace UI
                 if (edit)
                 {
                     getAuthorData(AuthorCtrl, author);
-                    Pubs::Controller::editAuthor(*author);
+                    try
+                    {
+                        Pubs::Controller::editAuthor(*author);
+                    }
+                    catch (std::exception e)
+                    {
+                        auto err = Utils::utf8_to_utf16(e.what());
+                        MessageBox(NULL, err.c_str(), L"Error", MB_OK);
+                        goto AUTH_ERR;
+                    }
                 }
                 else
                 {
                     getAuthorData(AuthorCtrl, author);
-                    Pubs::Controller::createAuthor(*author);
+                    try 
+                    {
+                        Pubs::Controller::createAuthor(*author);
+                    }
+                    catch (std::exception e)
+                    {
+                        auto err = Utils::utf8_to_utf16(e.what());
+                        MessageBox(NULL, err.c_str(), L"Error", MB_OK);
+                        goto AUTH_ERR;
+                    }
+                    delete author;
                 }
                 const HWND parent = GetParent(hDlg);
                 SendMessage(parent, REFRESH_VIEWS, 0, 0);
@@ -334,6 +352,7 @@ namespace UI
             }
             break;
         }
+AUTH_ERR:
         return (INT_PTR)FALSE;
     }
 }
