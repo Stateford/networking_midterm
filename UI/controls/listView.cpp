@@ -1,5 +1,7 @@
 #include "listView.h"
 
+#include "../utils.h"
+
 namespace Controls
 {
     void ListView::create()
@@ -79,7 +81,7 @@ namespace Controls
         std::vector<std::wstring> utf18Vector;
         for (auto &p : row)
         {
-            std::wstring convertedStr = utf8_to_utf16(p);
+            std::wstring convertedStr = Utils::utf8_to_utf16(p);
             utf18Vector.push_back(convertedStr);
         }
         return addRow(utf18Vector);

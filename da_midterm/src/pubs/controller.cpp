@@ -59,7 +59,7 @@ namespace Pubs
 
     void Controller::editAuthor(Author author)
     {
-        Request request(Config::Config::HOSTNAME + "/authors/" + author.au_id);
+        Request request(Config::Config::HOSTNAME + "/authors");
 
         Response response = request.method(PUT).json(author.to_json()).request();
         auto JSON = json::parse(response.content());

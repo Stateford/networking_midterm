@@ -55,6 +55,8 @@ namespace Pubs
 
     json Author::to_json()
     {
+        const unsigned int _contract = contract ? 1 : 0;
+
         const json author = {
             {"au_id", au_id},
             {"au_fname", au_fname},
@@ -64,7 +66,7 @@ namespace Pubs
             {"city", city},
             {"state", state},
             {"zip", zip},
-            {"contract", contract}
+            {"contract", _contract}
         };
 
         return author;

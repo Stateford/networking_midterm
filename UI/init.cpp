@@ -1,6 +1,7 @@
 #include "init.h"
 
 #include <thread>
+#include <windowsx.h>
 
 #include "resource.h"
 #include "controls\listView.h"
@@ -8,6 +9,8 @@
 #include "controls\popupMenu.h"
 #include "config.h"
 #include "controller.h"
+#include "utils.h"
+#include "messages.h"
 
 namespace UI
 {
@@ -40,7 +43,7 @@ namespace UI
         auto bookMenu = new Controls::PopupMenu(hWnd);
 
         authorView->setPosition(10, 20)
-            .setSize(200, 810)
+            .setSize(300, 810)
             .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT)
             .create();
 
@@ -79,6 +82,8 @@ namespace UI
 
         // author view on click
         authorView->registerCallback([=]() {
+            if (authors->size() == 0)
+                return;
             const unsigned int index = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
             auto auths = *authors;
             Pubs::Author author = auths[index];
@@ -115,7 +120,6 @@ namespace UI
                 const unsigned int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
                 auto auths = *authors;
                 Pubs::Author *author = &auths[authIndex];
-
                 DialogBoxParam(NULL, MAKEINTRESOURCE(IDD_AUTHORS), hWnd, Author, (LPARAM)author);
             }
                 break;
@@ -201,27 +205,102 @@ namespace UI
                 bookView->addRow({ p.title.c_str(), p.type.c_str(), p.pub_name.c_str(), price.c_str(), p.notes.c_str() });
             }
         }).detach();
+
     }
 
+    void getAuthorData(AuthorControls controls, Pubs::Author* author)
+    {
+        char au_fname[50];
+        char au_lname[50];
+        char au_phone[50];
+        char au_addr[50];
+        char au_state[50];
+        char au_city[50];
+        char au_zip[50];
+
+        GetWindowTextA(controls.edit_auth_fname, au_fname, 50);
+        GetWindowTextA(controls.edit_auth_lname, au_lname, 50);
+        GetWindowTextA(controls.edit_auth_phone, au_phone, 50);
+        GetWindowTextA(controls.edit_auth_addr, au_addr, 50);
+        GetWindowTextA(controls.edit_auth_state, au_state, 50);
+        GetWindowTextA(controls.edit_auth_city, au_city, 50);
+        GetWindowTextA(controls.edit_auth_zip, au_zip, 50);
+
+        const unsigned int contract = ComboBox_GetCurSel(controls.edit_auth_contract);
+
+        author->au_fname = au_fname;
+        author->au_lname = au_lname;
+        author->address = au_addr;
+        author->phone = au_phone;
+        author->state = au_state;
+        author->city = au_city;
+        author->zip = au_zip;
+        author->contract = static_cast<bool>(contract);
+    }
 
     // Message handler for main window
     INT_PTR CALLBACK Author(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
         UNREFERENCED_PARAMETER(lParam);
         static Pubs::Author *author;
+        static AuthorControls AuthorCtrl{ 0 };
+
+        static bool edit;
 
         switch (message)
         {
         case WM_INITDIALOG:
             // pass data to auth
+
+            AuthorCtrl.edit_auth_id = GetDlgItem(hDlg, IDC_AUTH_ID);
+            AuthorCtrl.edit_auth_fname = GetDlgItem(hDlg, IDC_AUTH_FNAME);
+            AuthorCtrl.edit_auth_lname = GetDlgItem(hDlg, IDC_AUTH_LNAME);
+            AuthorCtrl.edit_auth_phone = GetDlgItem(hDlg, IDC_AUTH_PHONE);
+            AuthorCtrl.edit_auth_addr = GetDlgItem(hDlg, IDC_AUTH_ADDR);
+            AuthorCtrl.edit_auth_state = GetDlgItem(hDlg, IDC_AUTH_STATE);
+            AuthorCtrl.edit_auth_city = GetDlgItem(hDlg, IDC_AUTH_CITY);
+            AuthorCtrl.edit_auth_zip = GetDlgItem(hDlg, IDC_AUTH_ZIP);
+            
+            AuthorCtrl.edit_auth_contract = GetDlgItem(hDlg, IDC_AUTH_CONTRACT);
+
+            ComboBox_AddString(AuthorCtrl.edit_auth_contract, L"No");
+            ComboBox_AddString(AuthorCtrl.edit_auth_contract, L"Yes");
+
             if (lParam)
             {
+                edit = true;
                 author = (Pubs::Author*)lParam;
+
+                const auto au_id = Utils::utf8_to_utf16(author->au_id);
+                const auto fname = Utils::utf8_to_utf16(author->au_fname);
+                const auto lname = Utils::utf8_to_utf16(author->au_lname);
+                const auto phone = Utils::utf8_to_utf16(author->phone);
+                const auto addr = Utils::utf8_to_utf16(author->address);
+                const auto state = Utils::utf8_to_utf16(author->state);
+                const auto city = Utils::utf8_to_utf16(author->city);
+                const auto zip = Utils::utf8_to_utf16(author->zip);
+
+                const unsigned int contract = static_cast<unsigned int>(author->contract);
+
+                Edit_SetText(AuthorCtrl.edit_auth_id, au_id.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_fname, fname.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_lname, lname.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_phone, phone.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_addr, addr.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_state, state.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_city, city.c_str());
+                Edit_SetText(AuthorCtrl.edit_auth_zip, zip.c_str());
+
+                ComboBox_SetCurSel(AuthorCtrl.edit_auth_contract, contract);
             }
             else
             {
+                edit = false;
                 auto auth = Pubs::Author();
                 author = &auth;
+
+                auto au_id = Utils::utf8_to_utf16(author->au_id);
+                Edit_SetText(AuthorCtrl.edit_auth_id, au_id.c_str());
             }
             return (INT_PTR)TRUE;
 
@@ -231,8 +310,22 @@ namespace UI
             switch (wMsg)
             {
             case IDOK:
+            {
+                if (edit)
+                {
+                    getAuthorData(AuthorCtrl, author);
+                    Pubs::Controller::editAuthor(*author);
+                }
+                else
+                {
+                    getAuthorData(AuthorCtrl, author);
+                    Pubs::Controller::createAuthor(*author);
+                }
+                const HWND parent = GetParent(hDlg);
+                SendMessage(parent, REFRESH_VIEWS, 0, 0);
                 EndDialog(hDlg, LOWORD(wParam));
                 return (INT_PTR)TRUE;
+            }
             case IDCANCEL:
                 EndDialog(hDlg, LOWORD(wParam));
                 return (INT_PTR)TRUE;

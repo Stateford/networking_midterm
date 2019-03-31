@@ -19,6 +19,8 @@ namespace Controls
         unsigned int columnSize();
         unsigned int count();
 
+        const wchar_t* getType() { return _type; };
+
         void create() override;
     };
 }

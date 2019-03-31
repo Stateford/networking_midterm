@@ -10,9 +10,6 @@
 
 namespace Controls
 {
-    std::string utf16_to_utf8(std::wstring);
-    std::wstring utf8_to_utf16(std::string);
-
     class Control
     {
     protected:
@@ -24,11 +21,11 @@ namespace Controls
         int _width;
         int _height;
         long _styleMask;
+        const wchar_t* _type = L"";
         std::wstring _text = L"";
         static unsigned int lastMessageId;
         unsigned int _parentMessage = 0;
         std::function<void()> _callback;
-        
     public:
         static std::vector<Control*> *controls;
         unsigned int index = 0;
@@ -47,6 +44,7 @@ namespace Controls
                 mask, mask);
             return *this;
         }
+        virtual const wchar_t* getType() { return _type; }
         long getStyleMask() { return _styleMask; }
         virtual Control& setText(const wchar_t* text) { _text = text; return *this; };
         virtual Control& setX(int x) { _x = x; return *this; }
