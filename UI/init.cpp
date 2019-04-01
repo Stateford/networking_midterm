@@ -206,6 +206,26 @@ namespace UI
                 bookView->addRow({ p.title.c_str(), p.type.c_str(), p.pub_name.c_str(), price.c_str(), p.notes.c_str() });
             }
         }).detach();
+
+        std::thread([=]() {
+        RETRY_PRESSED:
+            try
+            {
+                *authors = Pubs::Controller::getAllAuthors();
+                authorView->clear();
+
+                for (const auto &p : *authors)
+                {
+                    std::string contract = p.contract ? "yes" : "no";
+                    authorView->addRow({ p.au_fname.c_str(), p.au_lname.c_str(), p.phone.c_str(), p.address.c_str(), p.state.c_str(), p.city.c_str(), p.zip.c_str(), contract });
+                }
+            }
+            catch (std::exception err)
+            {
+                unsigned int result = MessageBox(NULL, L"Could not connect to the server", L"Error", MB_RETRYCANCEL | MB_SYSTEMMODAL);
+                goto RETRY_PRESSED;
+            }
+        }).detach();
     }
 
     void getAuthorData(AuthorControls controls, Pubs::Author* author)

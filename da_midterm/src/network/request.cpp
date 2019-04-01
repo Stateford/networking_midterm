@@ -140,7 +140,7 @@ namespace Network
                 response += std::string(buffer.begin(), buffer.begin() + iResult);
             }
             else if (iResult == 0)
-                (void(0));
+                break;
             else
                 throw TEXT("recv failed with error: ") + WSAGetLastError() + TEXT('\n');
 
