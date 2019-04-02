@@ -309,6 +309,7 @@ namespace UI
 
             if (lParam)
             {
+                SetWindowText(hDlg, L"Edit Author");
                 edit = true;
                 author = (Pubs::Author*)lParam;
 
@@ -336,6 +337,7 @@ namespace UI
             }
             else
             {
+                SetWindowText(hDlg, L"Create Author");
                 edit = false;
                 author = new Pubs::Author();
 
