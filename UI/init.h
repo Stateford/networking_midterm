@@ -5,6 +5,9 @@
 
 #include "author.h"
 #include "book.h"
+#include "controls\listView.h"
+#include "controls\button.h"
+#include "controls\popupMenu.h"
 
 namespace UI
 {
@@ -24,6 +27,7 @@ namespace UI
 
     void init(HWND, std::vector<Pubs::Author>*, std::vector<Pubs::Book>*, std::vector<Pubs::Book>*);
     void getAuthorData(AuthorControls, Pubs::Author*);
+    void refreshAuthorView(std::vector<Pubs::Author>*, Controls::ListView*);
 
-    INT_PTR CALLBACK Author(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+    INT_PTR CALLBACK Author(HWND, UINT, WPARAM, LPARAM);
 }

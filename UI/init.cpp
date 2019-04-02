@@ -4,9 +4,6 @@
 #include <windowsx.h>
 
 #include "resource.h"
-#include "controls\listView.h"
-#include "controls\button.h"
-#include "controls\popupMenu.h"
 #include "config.h"
 #include "controller.h"
 #include "utils.h"
@@ -15,7 +12,8 @@
 namespace UI
 {
     enum AUTHORMENU {
-        CREATE = 1,
+        REFRESH = 1,
+        CREATE,
         EDIT,
         REMOVE
     };
@@ -90,11 +88,15 @@ namespace UI
         authorBookView->setHeaders(bookHeader);
 
         authorMenu->setParentMessage(authorView->messageId);
-        authorMenu->setOptions({ L"Create", L"Edit", L"Remove" }).create();
+        authorMenu->setOptions({ L"Refresh", L"Create", L"Edit", L"Remove" }).create();
 
         authorMenu->registerCallback([=]() {
             switch (authorMenu->index)
             {
+            case AUTHORMENU::REFRESH:
+                SendMessage(hWnd, REFRESH_VIEWS, 0, 0);
+                refreshAuthorView(authors, authorView);
+                break;
             case AUTHORMENU::CREATE:
                 DialogBox(NULL, MAKEINTRESOURCE(IDD_AUTHORS), hWnd, Author);
                 break;
@@ -207,6 +209,8 @@ namespace UI
             }
         });
 
+        refreshAuthorView(authors, authorView);
+
         // add books to view
         std::thread([=]() {
             *books = Pubs::Controller::getAllBooks();
@@ -220,7 +224,10 @@ namespace UI
                 bookView->addRow({ p.title.c_str(), p.type.c_str(), p.pub_name.c_str(), price.c_str(), p.notes.c_str() });
             }
         }).detach();
+    }
 
+    void refreshAuthorView(std::vector<Pubs::Author> *authors, Controls::ListView *authorView)
+    {
         std::thread([=]() {
         RETRY_PRESSED:
             try
@@ -252,13 +259,13 @@ namespace UI
         std::string au_city(50, '\0');
         std::string au_zip(50, '\0');
 
-        GetWindowTextA(controls.edit_auth_fname, &au_fname[0], 50);
-        GetWindowTextA(controls.edit_auth_lname, &au_lname[0], 50);
-        GetWindowTextA(controls.edit_auth_phone, &au_phone[0], 50);
-        GetWindowTextA(controls.edit_auth_addr, &au_addr[0], 50);
-        GetWindowTextA(controls.edit_auth_state, &au_state[0], 50);
-        GetWindowTextA(controls.edit_auth_city, &au_city[0], 50);
-        GetWindowTextA(controls.edit_auth_zip, &au_zip[0], 50);
+        au_fname.resize(GetWindowTextA(controls.edit_auth_fname, &au_fname[0], 50));
+        au_lname.resize(GetWindowTextA(controls.edit_auth_lname, &au_lname[0], 50));
+        au_phone.resize(GetWindowTextA(controls.edit_auth_phone, &au_phone[0], 50));
+        au_addr.resize(GetWindowTextA(controls.edit_auth_addr, &au_addr[0], 50));
+        au_state.resize(GetWindowTextA(controls.edit_auth_state, &au_state[0], 50));
+        au_city.resize(GetWindowTextA(controls.edit_auth_city, &au_city[0], 50));
+        au_zip.resize(GetWindowTextA(controls.edit_auth_zip, &au_zip[0], 50));
 
         const unsigned int contract = ComboBox_GetCurSel(controls.edit_auth_contract);
 
