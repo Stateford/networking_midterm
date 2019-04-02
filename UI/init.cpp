@@ -44,7 +44,7 @@ namespace UI
 
         authorView->setPosition(10, 20)
             .setSize(500, 820)
-            .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT)
+            .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHOWSELALWAYS)
             .create();
 
         authorBookView->setPosition(840, 20)
@@ -127,13 +127,21 @@ namespace UI
                 break;
             case AUTHORMENU::REMOVE:
             {
-                const unsigned int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
-                auto auths = *authors;
-                Pubs::Author author = auths[authIndex];
+                try
+                {
+                    const unsigned int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
+                    auto auths = *authors;
+                    Pubs::Author author = auths[authIndex];
 
-                Pubs::Controller::deleteAuthor(author);
+                    Pubs::Controller::deleteAuthor(author);
 
-                authorView->callback();
+                    authorView->callback();
+                }
+                catch (std::exception e)
+                {
+                    auto err = Utils::utf8_to_utf16(e.what());
+                    MessageBox(NULL, err.c_str(), L"Error", MB_OK);
+                }
             }
                 break;
             default:
@@ -149,16 +157,28 @@ namespace UI
             {
             case AUTHORBOOKMENU::REMOVEBOOK:
             {
-                const unsigned int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
-                auto auths = *authors;
-                Pubs::Author author = auths[authIndex];
+                try 
+                {
+                    const int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
+                    const int bookIndex = SendMessage(authorBookView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
+                    if (authIndex <= -1 || bookIndex <= -1)
+                        return;
 
-                const unsigned int bookIndex = SendMessage(authorBookView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
-                auto bookVec = *authorBooks;
-                Pubs::Book book = bookVec[bookIndex];
+                    auto auths = *authors;
+                    Pubs::Author author = auths[authIndex];
 
-                Pubs::Controller::removeBookAuthor(author, book);
-                authorView->callback();
+
+                    auto bookVec = *authorBooks;
+                    Pubs::Book book = bookVec[bookIndex];
+
+                    Pubs::Controller::removeBookAuthor(author, book);
+                    authorView->callback();
+                }
+                catch (std::exception e)
+                {
+                    auto err = Utils::utf8_to_utf16(e.what());
+                    MessageBox(NULL, err.c_str(), L"Error", MB_OK);
+                }
                 break;
             }
             break;
@@ -175,16 +195,29 @@ namespace UI
             {
             case BOOKMENU::ADDBOOK:
             {
-                const unsigned int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
-                auto auths = *authors;
-                Pubs::Author author = auths[authIndex];
+                try 
+                {
+                    const int authIndex = SendMessage(authorView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
+                    const int bookIndex = SendMessage(bookView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
 
-                const unsigned int bookIndex = SendMessage(bookView->getHandle(), LVM_GETNEXTITEM, (WPARAM)-1, (LPARAM)LVNI_SELECTED);
-                auto bookVec = *books;
-                Pubs::Book book = bookVec[bookIndex];
+                    if (authIndex <= -1 || bookIndex <= -1)
+                        return;
 
-                Pubs::Controller::addBookToAuthor(author, book);
-                authorView->callback();
+                    auto auths = *authors;
+                    Pubs::Author author = auths[authIndex];
+
+                    auto bookVec = *books;
+                    Pubs::Book book = bookVec[bookIndex];
+
+                    Pubs::Controller::addBookToAuthor(author, book);
+                    authorView->callback();
+                }
+                catch (std::exception e)
+                {
+                    auto err = Utils::utf8_to_utf16(e.what());
+                    MessageBox(NULL, err.c_str(), L"Error", MB_OK);
+                }
+
                 break;
             }
             break;
