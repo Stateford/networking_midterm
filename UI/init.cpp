@@ -32,7 +32,7 @@ namespace UI
     {
         Config::Config config;
 
-        auto refreshButton = new Controls::Button(hWnd);
+        // Views
         auto authorView = new Controls::ListView(hWnd);
         auto bookView = new Controls::ListView(hWnd);
         auto authorBookView = new Controls::ListView(hWnd);
@@ -57,28 +57,9 @@ namespace UI
             .setStyleMask(WS_CHILD | WS_VISIBLE | LVS_REPORT)
             .create();
 
-        refreshButton->setPosition(200, 650)
-            .setSize(40, 100)
-            .setStyleMask(WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON)
-            .setText(L"Refresh")
-            .create();
-
         authorView->setExStyleMask(LVS_EX_AUTOSIZECOLUMNS).setExStyleMask(LVS_EX_FULLROWSELECT);
         bookView->setExStyleMask(LVS_EX_AUTOSIZECOLUMNS).setExStyleMask(LVS_EX_FULLROWSELECT);
         authorBookView->setExStyleMask(LVS_EX_AUTOSIZECOLUMNS).setExStyleMask(LVS_EX_FULLROWSELECT);
-
-        refreshButton->registerCallback([=]() {
-            std::thread([=]() {
-                *authors = Pubs::Controller::getAllAuthors();
-                authorView->clear();
-
-                for (auto const &p : *authors)
-                {
-                    std::string contract = p.contract ? "yes" : "no";
-                    authorView->addRow({ p.au_fname.c_str(), p.au_lname.c_str(), p.phone.c_str(), p.address.c_str(), p.state.c_str(), p.city.c_str(), p.zip.c_str(), contract });
-                }
-            }).detach();
-        });
 
         // author view on click
         authorView->registerCallback([=]() {
